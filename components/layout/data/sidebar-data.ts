@@ -1,4 +1,4 @@
-import { Users, Home } from "lucide-react";
+import { Users, Home, Wallet, ReceiptText } from "lucide-react";
 import { type SidebarData } from "../types";
 
 export const sidebarData: SidebarData = {
@@ -23,6 +23,16 @@ export const sidebarData: SidebarData = {
           title: "Users",
           url: "/users",
           icon: Users,
+        },
+        {
+          title: "Cash Requests",
+          url: "/cash-requests",
+          icon: Wallet,
+        },
+        {
+          title: "Expenses",
+          url: "/expenses",
+          icon: ReceiptText,
         },
       ],
     },
