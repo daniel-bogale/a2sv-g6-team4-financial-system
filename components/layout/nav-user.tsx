@@ -59,12 +59,12 @@ export function NavUser({ user }: NavUserProps) {
                                 size='lg'
                                 className='data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground'
                             >
-                                <div className='flex items-center gap-2 px-1 py-1.5 text-start text-sm'>
-                                    <Avatar className='h-8 w-8 rounded-lg'>
+                                <div className='flex items-center gap-2 px-1 py-1.5 text-start text-xs'>
+                                    <Avatar className='h-8 w-8 rounded-none'>
                                         <AvatarImage src={user.avatar || undefined} alt={user?.name || ''} />
-                                        <AvatarFallback className='rounded-lg'>{getInitials(user?.name || '')}</AvatarFallback>
+                                        <AvatarFallback className='rounded-none'>{getInitials(user?.name || '')}</AvatarFallback>
                                     </Avatar>
-                                    <div className='grid flex-1 text-start text-sm leading-tight'>
+                                    <div className='grid flex-1 text-start text-xs leading-tight'>
                                         <div className='flex items-center gap-2'>
                                             <span className='truncate font-semibold'>{user.name}</span>
                                             {user.role && (
@@ -80,18 +80,18 @@ export function NavUser({ user }: NavUserProps) {
                             </SidebarMenuButton>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent
-                            className='w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg'
+                            className='w-(--radix-dropdown-menu-trigger-width) min-w-56'
                             side={isMobile ? 'bottom' : 'right'}
                             align='end'
                             sideOffset={4}
                         >
                             <DropdownMenuLabel className='p-0 font-normal'>
-                                <div className='flex items-center gap-2 px-1 py-1.5 text-start text-sm'>
-                                    <Avatar className='h-8 w-8 rounded-lg'>
+                                <div className='flex items-center gap-2 px-1 py-1.5 text-start text-xs'>
+                                    <Avatar className='h-8 w-8 rounded-none'>
                                         <AvatarImage src={user.avatar} alt={user?.name || ''} />
-                                        <AvatarFallback className='rounded-lg'>{getInitials(user?.name || '')}</AvatarFallback>
+                                        <AvatarFallback className='rounded-none'>{getInitials(user?.name || '')}</AvatarFallback>
                                     </Avatar>
-                                    <div className='grid flex-1 text-start text-sm leading-tight'>
+                                    <div className='grid flex-1 text-start text-xs leading-tight'>
                                         <div className='flex items-center gap-2'>
                                             <span className='truncate font-semibold'>{user.name}</span>
                                             {user.role && (

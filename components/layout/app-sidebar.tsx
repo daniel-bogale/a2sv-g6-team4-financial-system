@@ -34,10 +34,10 @@ export function AppSidebar() {
         <Sidebar collapsible="icon" variant="sidebar">
             <SidebarHeader>
                 <div className='flex items-center gap-2 py-1'>
-                    <div className='flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground'>
+                    <div className='flex size-8 items-center justify-center rounded-none bg-primary text-primary-foreground'>
                         <span className='text-sm font-bold'>F</span>
                     </div>
-                    <div className='grid flex-1 text-start text-sm leading-tight'>
+                    <div className='grid flex-1 text-start text-xs leading-tight'>
                         <span className='truncate font-semibold'>
                             Financial System
                         </span>

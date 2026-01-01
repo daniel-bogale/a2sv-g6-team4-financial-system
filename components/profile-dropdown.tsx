@@ -48,7 +48,7 @@ export function ProfileDropdown({ user }: ProfileDropdownProps) {
         <>
             <DropdownMenu modal={false}>
                 <DropdownMenuTrigger asChild>
-                    <Button variant='ghost' className='relative h-8 w-8 rounded-full' suppressHydrationWarning>
+                    <Button variant='ghost' className='relative h-8 w-8 rounded-none' suppressHydrationWarning>
                         <Avatar className='h-8 w-8'>
                             <AvatarImage src={displayAvatar} alt={displayName} />
                             <AvatarFallback>{initials}</AvatarFallback>
@@ -59,7 +59,7 @@ export function ProfileDropdown({ user }: ProfileDropdownProps) {
                     <DropdownMenuLabel className='font-normal'>
                         <div className='flex flex-col gap-1.5'>
                             <div className='flex items-center justify-between gap-2'>
-                                <p className='text-sm leading-none font-medium'>{displayName}</p>
+                                <p className='text-xs leading-none font-medium'>{displayName}</p>
                                 {displayRole && (
                                     <Badge variant="secondary" className="text-xs">
                                         {formatRole(displayRole)}

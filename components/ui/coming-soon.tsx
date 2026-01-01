@@ -10,8 +10,8 @@ export function ComingSoon() {
     >
       <div className='m-auto flex h-full w-full flex-col items-center justify-center gap-2'>
         <Telescope size={72} />
-        <h1 className='text-4xl leading-tight font-bold'>Coming Soon</h1>
-        <p className='text-muted-foreground text-center'>
+        <h1 className='text-3xl leading-tight font-bold'>Coming Soon</h1>
+        <p className='text-muted-foreground text-center text-xs'>
           Feature under development<br />
           Stay tuned for updates!
         </p>
