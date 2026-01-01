@@ -1,5 +1,6 @@
 import { Main } from "@/components/layout/main";
 import { BudgetsClient } from "@/components/budgets/budgets-client";
+import { AddBudgetButton } from "@/components/budgets/add-budget-button";
 import { getBudgets } from "@/lib/actions/budgets";
 import { loadBudgetsSearchParams } from "./search-params";
 import type { SearchParams } from "nuqs/server";
@@ -29,6 +30,7 @@ export default async function BudgetsPage({ searchParams }: BudgetsPageProps) {
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <h1 className="text-4xl font-bold tracking-tight text-foreground">Budgets</h1>
+            <AddBudgetButton />
           </div>
           <p className="text-base text-muted-foreground">
             Manage and view budgets across departments

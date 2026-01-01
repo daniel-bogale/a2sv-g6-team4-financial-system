@@ -1,7 +1,9 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 import type { Budget } from "@/components/budgets/budgets-types";
+import { z } from "zod";
 
 export interface GetBudgetsParams {
   page?: number;
@@ -154,6 +156,71 @@ export async function getBudgets(
       page: 1,
       pageSize: 10,
       totalPages: 0,
+    };
+  }
+}
+
+const createBudgetSchema = z.object({
+  department: z.string().min(1, "Department is required"),
+  period: z.string().min(1, "Period is required"),
+  amount: z.number().positive("Amount must be positive"),
+});
+
+export async function createBudget(_: unknown, formData: FormData) {
+  try {
+    const supabase = await createSupabaseServerClient();
+
+    // Get current user
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      return { error: "Authentication required." };
+    }
+
+    // Parse and validate form data
+    const parsed = createBudgetSchema.safeParse({
+      department: formData.get("department"),
+      period: formData.get("period"),
+      amount: parseFloat(formData.get("amount") as string),
+    });
+
+    if (!parsed.success) {
+      return {
+        error: parsed.error.issues[0]?.message ?? "Invalid input",
+      };
+    }
+
+    const { department, period, amount } = parsed.data;
+
+    // Always set status to PENDING for new budgets
+    const status = "PENDING";
+
+    // Insert the budget
+    const { error: insertError } = await supabase.from("budgets").insert({
+      department,
+      period,
+      amount,
+      used: 0,
+      status,
+      created_by: user.id,
+    });
+
+    if (insertError) {
+      console.error("Error creating budget:", insertError);
+      return { error: insertError.message };
+    }
+
+    // Revalidate the budgets page
+    revalidatePath("/budgets");
+
+    return { success: true };
+  } catch (error) {
+    console.error("Unexpected error in createBudget:", error);
+    return {
+      error: error instanceof Error ? error.message : "Unknown server error",
     };
   }
 }
