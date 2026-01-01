@@ -2,6 +2,7 @@ import { Main } from "@/components/layout/main";
 import { BudgetsClient } from "@/components/budgets/budgets-client";
 import { AddBudgetButton } from "@/components/budgets/add-budget-button";
 import { getBudgets } from "@/lib/actions/budgets";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 import { loadBudgetsSearchParams } from "./search-params";
 import type { SearchParams } from "nuqs/server";
 
@@ -23,6 +24,22 @@ export default async function BudgetsPage({ searchParams }: BudgetsPageProps) {
     sortBy: params.sortBy,
     sortOrder: params.sortOrder === "asc" ? "asc" : "desc",
   });
+
+  // Get user role
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  let userRole: string | null = null;
+  if (user) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .single();
+    userRole = profile?.role || null;
+  }
 
   return (
     <Main>
@@ -47,6 +64,7 @@ export default async function BudgetsPage({ searchParams }: BudgetsPageProps) {
               pageSize: paginatedBudgets.pageSize,
               totalPages: paginatedBudgets.totalPages,
             }}
+            userRole={userRole}
           />
         </div>
       </div>

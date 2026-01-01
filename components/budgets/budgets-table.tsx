@@ -30,6 +30,7 @@ type BudgetsTableProps = {
   data: Budget[]
   total: number
   totalPages: number
+  userRole: string | null
 }
 
 const ALLOWED_SORT_COLUMNS = new Set([
@@ -41,7 +42,7 @@ const ALLOWED_SORT_COLUMNS = new Set([
   'created_at',
 ])
 
-export function BudgetsTable({ data, total, totalPages }: BudgetsTableProps) {
+export function BudgetsTable({ data, total, totalPages, userRole }: BudgetsTableProps) {
   const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
 
@@ -144,7 +145,7 @@ export function BudgetsTable({ data, total, totalPages }: BudgetsTableProps) {
     })
   }
 
-  const columns = createBudgetsColumns()
+  const columns = createBudgetsColumns(userRole)
 
   const table = useReactTable({
     data,

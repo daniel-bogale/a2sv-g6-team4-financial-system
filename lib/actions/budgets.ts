@@ -224,3 +224,109 @@ export async function createBudget(_: unknown, formData: FormData) {
     };
   }
 }
+
+export async function approveBudget(budgetId: string) {
+  try {
+    const supabase = await createSupabaseServerClient();
+
+    // Get current user
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      return { error: "Authentication required." };
+    }
+
+    // Get user role
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .single();
+
+    if (profileError || !profile) {
+      return { error: "Failed to fetch user profile." };
+    }
+
+    // Check if user is FINANCE
+    if (profile.role !== "FINANCE") {
+      return { error: "Only FINANCE users can approve budgets." };
+    }
+
+    // Update the budget status
+    const { error: updateError } = await supabase
+      .from("budgets")
+      .update({ status: "APPROVED" })
+      .eq("id", budgetId);
+
+    if (updateError) {
+      console.error("Error approving budget:", updateError);
+      return { error: updateError.message };
+    }
+
+    // Revalidate the budgets page
+    revalidatePath("/budgets");
+
+    return { success: true };
+  } catch (error) {
+    console.error("Unexpected error in approveBudget:", error);
+    return {
+      error: error instanceof Error ? error.message : "Unknown server error",
+    };
+  }
+}
+
+export async function rejectBudget(budgetId: string) {
+  try {
+    const supabase = await createSupabaseServerClient();
+
+    // Get current user
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      return { error: "Authentication required." };
+    }
+
+    // Get user role
+    const { data: profile, error: profileError } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .single();
+
+    if (profileError || !profile) {
+      return { error: "Failed to fetch user profile." };
+    }
+
+    // Check if user is FINANCE
+    if (profile.role !== "FINANCE") {
+      return { error: "Only FINANCE users can reject budgets." };
+    }
+
+    // Update the budget status
+    const { error: updateError } = await supabase
+      .from("budgets")
+      .update({ status: "REJECTED" })
+      .eq("id", budgetId);
+
+    if (updateError) {
+      console.error("Error rejecting budget:", updateError);
+      return { error: updateError.message };
+    }
+
+    // Revalidate the budgets page
+    revalidatePath("/budgets");
+
+    return { success: true };
+  } catch (error) {
+    console.error("Unexpected error in rejectBudget:", error);
+    return {
+      error: error instanceof Error ? error.message : "Unknown server error",
+    };
+  }
+}

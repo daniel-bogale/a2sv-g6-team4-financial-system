@@ -11,14 +11,16 @@ interface BudgetsClientProps {
     pageSize: number;
     totalPages: number;
   };
+  userRole: string | null;
 }
 
-export function BudgetsClient({ budgets, pagination }: BudgetsClientProps) {
+export function BudgetsClient({ budgets, pagination, userRole }: BudgetsClientProps) {
   return (
     <BudgetsTable
       data={budgets}
       total={pagination.total}
       totalPages={pagination.totalPages}
+      userRole={userRole}
     />
   );
 }
