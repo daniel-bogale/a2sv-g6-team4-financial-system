@@ -19,18 +19,23 @@ export function useUserProfile() {
         data: { user },
         error: userError,
       } = await supabase.auth.getUser();
+
       if (userError || !user) {
         setProfile(null);
         setLoading(false);
         return;
       }
 
-      // Get role from app_metadata and other data from profiles table
+      // Use user metadata instead of profiles table
       const role = (user.app_metadata?.role as string) || "STAFF";
+      const fullName =
+        (user.user_metadata?.full_name as string) ||
+        user.email?.split("@")[0] ||
+        "Unknown";
 
       setProfile({
         id: user.id,
-        full_name: user.email || "Unknown",
+        full_name: fullName,
         role: role,
       });
 

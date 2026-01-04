@@ -41,7 +41,7 @@ export async function getUsers(
 
     const adminClient = createSupabaseAdminClient();
 
-    // Get users from auth.users with app_metadata
+    // Fetch all users from auth
     const { data: authData, error: authError } =
       await adminClient.auth.admin.listUsers();
 
@@ -56,9 +56,13 @@ export async function getUsers(
       };
     }
 
-    let users = authData.users.map((user) => ({
+    // Transform auth users to User format using metadata
+    let users: User[] = authData.users.map((user) => ({
       id: user.id,
-      full_name: user.email || user.user_metadata?.full_name || "Unknown",
+      full_name:
+        (user.user_metadata?.full_name as string) ||
+        user.email?.split("@")[0] ||
+        "Unknown",
       role: (user.app_metadata?.role as string) || "STAFF",
     }));
 
@@ -67,27 +71,25 @@ export async function getUsers(
       users = users.filter((user) => role.includes(user.role));
     }
 
-    // Apply search filter (search in full_name/email)
+    // Apply search filter
     if (search.trim()) {
-      const searchTerm = search.trim().toLowerCase();
+      const searchLower = search.trim().toLowerCase();
       users = users.filter((user) =>
-        user.full_name.toLowerCase().includes(searchTerm)
+        user.full_name.toLowerCase().includes(searchLower)
       );
     }
 
-    const total = users.length;
-    const totalPages = Math.ceil(total / pageSize) || 1;
-
     // Apply sorting
     const validSortBy = SORTABLE_COLUMNS.has(sortBy) ? sortBy : "full_name";
-    const ascending = sortOrder === "asc";
-
     users.sort((a, b) => {
-      const aVal = a[validSortBy as keyof typeof a] || "";
-      const bVal = b[validSortBy as keyof typeof b] || "";
-      const comparison = aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
-      return ascending ? comparison : -comparison;
+      const aVal = a[validSortBy as keyof User] as string;
+      const bVal = b[validSortBy as keyof User] as string;
+      const comparison = aVal.localeCompare(bVal);
+      return sortOrder === "asc" ? comparison : -comparison;
     });
+
+    const total = users.length;
+    const totalPages = Math.ceil(total / pageSize) || 1;
 
     // Apply pagination
     const from = (page - 1) * pageSize;
@@ -127,7 +129,7 @@ export async function updateUserRole(userId: string, newRole: string) {
       return { error: "Unauthorized" };
     }
 
-    // Check current user's role from app_metadata
+    // Check current user's role from metadata
     const currentUserRole = user.app_metadata?.role as string;
 
     if (!currentUserRole || currentUserRole !== "FINANCE") {
@@ -141,12 +143,15 @@ export async function updateUserRole(userId: string, newRole: string) {
     }
 
     // Update the user's role in app_metadata
-    const { error } = await adminClient.auth.admin.updateUserById(userId, {
-      app_metadata: { role: newRole },
-    });
+    const { error: authError } = await adminClient.auth.admin.updateUserById(
+      userId,
+      {
+        app_metadata: { role: newRole },
+      }
+    );
 
-    if (error) {
-      console.error("Error updating user role:", error);
+    if (authError) {
+      console.error("Error updating user role in auth:", authError);
       return { error: "Failed to update user role" };
     }
 

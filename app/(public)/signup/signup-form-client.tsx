@@ -33,6 +33,7 @@ export function SignupFormClient() {
     const router = useRouter()
     const [loading, setLoading] = useState(false)
     const [isVisible, setIsVisible] = useState(false)
+
     const branding = {
         name: "Fin G4",
         logo_url: null,
@@ -52,36 +53,38 @@ export function SignupFormClient() {
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         setLoading(true)
+
         try {
+            // Sign up the user with Supabase Auth
             const { data, error } = await supabase.auth.signUp({
                 email: values.email,
                 password: values.password,
+                options: {
+                    emailRedirectTo: `${window.location.origin}/home`,
+                },
             })
 
             if (error) {
-                toast.error('Sign up failed' + (error.message ? `: ${error.message}` : ''))
+                toast.error('Sign up failed: ' + error.message)
                 setLoading(false)
                 return
             }
 
             if (data.user) {
-                toast.success('Account created')
-                // Automatically log in the user after signup
-                const { error: loginError } = await supabase.auth.signInWithPassword({
-                    email: values.email,
-                    password: values.password,
-                })
-                if (loginError) {
-                    toast.error('Auto-login failed' + (loginError.message ? `: ${loginError.message}` : ''))
-                    setLoading(false)
+                // Check if email confirmation is required
+                if (data.session) {
+                    toast.success('Account created successfully!')
+                    router.replace('/home')
+                } else {
+                    toast.success('Account created! Please check your email to confirm.')
                     router.replace('/login')
-                    return
                 }
-                router.replace('/home')
             }
         } catch (error) {
             const errMsg = error instanceof Error ? error.message : 'An unexpected error occurred';
-            toast.error('Sign up failed' + (errMsg ? `: ${errMsg}` : ''))
+            toast.error('Sign up failed: ' + errMsg)
+            setLoading(false)
+        } finally {
             setLoading(false)
         }
     }
