@@ -5,7 +5,7 @@
 /**
  * User roles in the system
  */
-export type UserRole = "FINANCE" | "STAFF" | "ADMIN";
+export type UserRole = "FINANCE" | "STAFF";
 
 /**
  * User profile data structure
@@ -24,14 +24,13 @@ export type UserProfile = {
 export const ROLE_HIERARCHY: Record<UserRole, number> = {
   STAFF: 1,
   FINANCE: 2,
-  ADMIN: 3,
 } as const;
 
 /**
  * Route-based role permissions
  */
 export const ROUTE_PERMISSIONS: Record<string, UserRole[]> = {
-  "/home": ["FINANCE", "STAFF", "ADMIN"],
-  "/settings": ["FINANCE", "STAFF", "ADMIN"],
-  "/users": ["ADMIN"],
+  "/home": ["FINANCE", "STAFF"],
+  "/settings": ["FINANCE", "STAFF"],
+  "/users": ["FINANCE"],
 } as const;

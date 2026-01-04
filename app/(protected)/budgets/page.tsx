@@ -33,12 +33,7 @@ export default async function BudgetsPage({ searchParams }: BudgetsPageProps) {
 
   let userRole: string | null = null;
   if (user) {
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", user.id)
-      .single();
-    userRole = profile?.role || null;
+    userRole = (user.app_metadata?.role as string) || null;
   }
 
   return (

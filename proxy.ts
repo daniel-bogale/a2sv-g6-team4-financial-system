@@ -93,24 +93,15 @@ export async function proxy(request: NextRequest) {
 
   // Authenticated users: check route permissions
   if (user && !isPublicRoute) {
-    // const userRole = get public.profile.role
-    const { data: profileData, error: profileError } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", user.id)
-      .single();
+    // Get role from JWT app_metadata
+    const userRole = (user.app_metadata?.role as UserRole) || null;
 
-    if (profileError || !profileData) {
-      console.error(
-        `Error fetching profile for user ${user.id}:`,
-        profileError
-      );
+    if (!userRole) {
+      console.error(`No role found in app_metadata for user ${user.id}`);
       const url = request.nextUrl.clone();
       url.pathname = "/500";
       return NextResponse.redirect(url);
     }
-
-    const userRole = profileData.role as UserRole | null;
 
     if (!hasRoutePermission(userRole, pathname)) {
       console.warn(

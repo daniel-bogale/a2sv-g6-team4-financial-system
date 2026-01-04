@@ -24,16 +24,16 @@ export function useUserProfile() {
         setLoading(false);
         return;
       }
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("id, full_name, role")
-        .eq("id", user.id)
-        .single();
-      if (!error && data) {
-        setProfile(data);
-      } else {
-        setProfile(null);
-      }
+
+      // Get role from app_metadata and other data from profiles table
+      const role = (user.app_metadata?.role as string) || "STAFF";
+
+      setProfile({
+        id: user.id,
+        full_name: user.email || "Unknown",
+        role: role,
+      });
+
       setLoading(false);
     };
     fetchProfile();

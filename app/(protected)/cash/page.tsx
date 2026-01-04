@@ -29,12 +29,7 @@ export default async function CashRequestsPage({ searchParams }: CashRequestsPag
 
   if (user) {
     userId = user.id;
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", user.id)
-      .single();
-    userRole = profile?.role || null;
+    userRole = (user.app_metadata?.role as string) || null;
   }
 
   const isFinance = userRole === "FINANCE";

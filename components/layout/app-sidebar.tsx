@@ -26,9 +26,21 @@ export function AppSidebar() {
         }
         : sidebarData.user
 
+    // Filter navigation items based on user role
+    const filteredNavGroups = sidebarData.navGroups.map(group => ({
+        ...group,
+        items: group.items.filter(item => {
+            // Only show Users link to FINANCE role
+            if (item.title === 'Users') {
+                return user.role === 'FINANCE';
+            }
+            return true;
+        })
+    }));
+
     // Separate Settings group from other groups
-    const settingsGroup = sidebarData.navGroups.find((group) => group.title === 'Settings')
-    const mainNavGroups = sidebarData.navGroups.filter((group) => group.title !== 'Settings')
+    const settingsGroup = filteredNavGroups.find((group) => group.title === 'Settings')
+    const mainNavGroups = filteredNavGroups.filter((group) => group.title !== 'Settings')
 
     return (
         <Sidebar collapsible="icon" variant="sidebar">

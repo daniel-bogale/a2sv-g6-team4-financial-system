@@ -239,19 +239,15 @@ export async function approveBudget(budgetId: string) {
       return { error: "Authentication required." };
     }
 
-    // Get user role
-    const { data: profile, error: profileError } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", user.id)
-      .single();
+    // Get user role from JWT app_metadata
+    const userRole = (user.app_metadata?.role as string) || null;
 
-    if (profileError || !profile) {
-      return { error: "Failed to fetch user profile." };
+    if (!userRole) {
+      return { error: "Failed to fetch user role." };
     }
 
     // Check if user is FINANCE
-    if (profile.role !== "FINANCE") {
+    if (userRole !== "FINANCE") {
       return { error: "Only FINANCE users can approve budgets." };
     }
 
@@ -292,19 +288,15 @@ export async function rejectBudget(budgetId: string) {
       return { error: "Authentication required." };
     }
 
-    // Get user role
-    const { data: profile, error: profileError } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", user.id)
-      .single();
+    // Get user role from JWT app_metadata
+    const userRole = (user.app_metadata?.role as string) || null;
 
-    if (profileError || !profile) {
-      return { error: "Failed to fetch user profile." };
+    if (!userRole) {
+      return { error: "Failed to fetch user role." };
     }
 
     // Check if user is FINANCE
-    if (profile.role !== "FINANCE") {
+    if (userRole !== "FINANCE") {
       return { error: "Only FINANCE users can reject budgets." };
     }
 
